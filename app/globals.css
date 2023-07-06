@@ -4,24 +4,114 @@
 
 :root {
   --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --background-rgb: 225, 248, 220;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --background-rgb: 5, 5, 5;
   }
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background: rgb(var(--background-rgb));
+}
+
+h1 {
+  @apply text-lg font-bold
+}
+
+p {
+  @apply mb-4
+}
+
+ul.vertical {
+  @apply list-disc list-inside
+}
+
+.screen-centered {
+  @apply flex flex-col items-center justify-center
+}
+
+.page-content {
+  @apply min-h-screen p-4
+}
+
+.page-title {
+  @apply mb-4 text-xl font-bold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-3xl dark:text-white
+}
+
+.page-header {
+  @apply flex flex-row flex-wrap items-center justify-between p-4
+}
+
+.page-footer {
+  @apply p-4
+}
+
+.page-nav a {
+  text-decoration: underline;
+}
+
+.page-nav ul {
+  @apply flex
+}
+
+.page-nav li {
+  @apply mr-6
+}
+
+.checkbox-group {
+  @apply text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white
+}
+
+.checkbox-group.checkbox-group-horizontal {
+  @apply items-center w-full sm:flex
+}
+
+.checkbox-group.checkbox-group-vertical {
+  @apply w-48
+}
+
+.checkbox-group .checkbox-group-item {
+  @apply w-full border-b border-gray-200 dark:border-gray-600
+}
+
+.checkbox-group.checkbox-group-horizontal .checkbox-group-item {
+  @apply sm:border-b-0 sm:border-r
+}
+
+.checkbox-group.checkbox-group-vertical .checkbox-group-item {
+  @apply rounded-t-lg
+}
+
+.checkbox-group-item-inner {
+  @apply flex items-center pl-3
+}
+
+.checkbox-group-input {
+  @apply w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500
+}
+
+.checkbox-group-label {
+  @apply w-full py-3 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300
+}
+
+.parse-mode-block {
+  @apply w-full lg:w-2/4
+}
+
+.message-block {
+  @apply w-full flex
+}
+
+.message-block .message-text,
+.message-block .message-preview {
+  @apply w-full lg:w-2/4 p-4 flex-auto
+}
+
+.message-block-tooltip {
+  @apply text-sm text-gray-500
 }
