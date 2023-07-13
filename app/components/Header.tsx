@@ -1,6 +1,7 @@
+import { FC } from 'react';
 import Link from 'next/link';
 
-export default function Header() {
+const Header: FC = () => {
   return (
     <header className="page-header">
       <div className="logo">
@@ -23,4 +24,6 @@ export default function Header() {
       </nav>
     </header>
   );
-}
+};
+
+export default Header;

@@ -11,7 +11,11 @@ export const metadata = {
   description: 'Send messages to Telegram users by using bot',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+type RootLayoutProps = {
+  children: React.ReactNode;
+};
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="uk">
       <body className={inter.className}>

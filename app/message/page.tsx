@@ -1,6 +1,7 @@
+import type { NextPage } from 'next';
 import RadioGroup from '../components/RadioGroup';
 
-export default function Message() {
+const MessagePage: NextPage = () => {
   return (
     <main className="page-content">
       <h2 className="page-title">Відправити текстове повідомлення</h2>
@@ -29,4 +30,6 @@ export default function Message() {
       </div>
     </main>
   );
-}
+};
+
+export default MessagePage;

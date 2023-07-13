@@ -1,4 +1,4 @@
-import { NextPage } from 'next';
+import { FC } from 'react';
 import cn from 'classnames';
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
   }[];
 }
 
-const RadioGroup: NextPage<Props> = (props) => {
+const RadioGroup: FC<Props> = (props) => {
   const { type, labels } = props;
 
   return (

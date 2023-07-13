@@ -1,4 +1,6 @@
-export default function Home() {
+import type { NextPage } from 'next';
+
+const Home: NextPage = () => {
   return (
     <main className="page-content">
       <h2 className="page-title">Вітаю!</h2>
@@ -15,4 +17,6 @@ export default function Home() {
       </ul>
     </main>
   );
-}
+};
+
+export default Home;

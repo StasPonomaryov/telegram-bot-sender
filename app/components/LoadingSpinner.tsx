@@ -1,4 +1,6 @@
-export default function LoadingSpinner() {
+import { FC } from 'react';
+
+const LoadingSpinner: FC = () => {
   return (
     <div role="status">
       <svg
@@ -20,4 +22,6 @@ export default function LoadingSpinner() {
       <span className="sr-only">Loading...</span>
     </div>
   );
-}
+};
+
+export default LoadingSpinner;
