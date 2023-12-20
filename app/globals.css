@@ -31,6 +31,30 @@ ul.vertical {
   @apply list-disc list-inside
 }
 
+.required {
+  @apply text-red-700
+}
+
+.textarea-label {
+  @apply block mb-2 text-sm font-medium text-gray-900 dark:text-white
+}
+
+.textarea-field {
+  @apply block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500
+}
+
+.fieldset-block {
+  @apply flex border border-solid border-gray-500 p-4 h-full
+}
+
+.fieldset-text {
+  @apply flex mt-auto w-3/4 p-4 rounded-t-xl rounded-br-xl bg-amber-200 dark:bg-gray-600
+}
+
+.submit-button {
+  @apply px-8 py-3 text-white bg-blue-300 rounded focus:outline-none
+}
+
 .screen-centered {
   @apply flex flex-col items-center justify-center
 }
@@ -63,55 +87,85 @@ ul.vertical {
   @apply mr-6
 }
 
-.checkbox-group {
+.radio-group {
   @apply text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white
 }
 
-.checkbox-group.checkbox-group-horizontal {
+.radio-group-title {
+  @apply mb-2 text-sm font-medium text-gray-900 dark:text-white
+}
+
+.radio-group.radio-group-horizontal {
   @apply items-center w-full sm:flex
 }
 
-.checkbox-group.checkbox-group-vertical {
+.radio-group.radio-group-vertical {
   @apply w-48
 }
 
-.checkbox-group .checkbox-group-item {
+.radio-group .radio-group-item {
   @apply w-full border-b border-gray-200 dark:border-gray-600
 }
 
-.checkbox-group.checkbox-group-horizontal .checkbox-group-item {
-  @apply sm:border-b-0 sm:border-r
+.radio-group.radio-group-horizontal .radio-group-item {
+  @apply sm:border-b-0
 }
 
-.checkbox-group.checkbox-group-vertical .checkbox-group-item {
+.radio-group.radio-group-horizontal .radio-group-item:not(:last-child) {
+  @apply sm:border-r
+}
+
+.radio-group.radio-group-vertical .radio-group-item {
   @apply rounded-t-lg
 }
 
-.checkbox-group-item-inner {
+.radio-group-item-inner {
   @apply flex items-center pl-3
 }
 
-.checkbox-group-input {
+.radio-group-input {
   @apply w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500
 }
 
-.checkbox-group-label {
+.radio-group-label {
   @apply w-full py-3 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300
 }
 
 .parse-mode-block {
-  @apply w-full lg:w-2/4
+  @apply w-full lg:w-2/4 p-4
 }
 
-.message-block {
+.message-block,
+.targets-block,
+.bot-info-block {
   @apply w-full flex
 }
 
+.targets-block-tooltip pre {
+  @apply whitespace-normal
+}
+
 .message-block .message-text,
-.message-block .message-preview {
+.message-block .message-preview,
+.targets-block .targets-input,
+.bot-info-block .bot-info-input,
+.bot-info-block .bot-info-info {
   @apply w-full lg:w-2/4 p-4 flex-auto
 }
 
-.message-block-tooltip {
-  @apply text-sm text-gray-500
+div[class*="block-tooltip"] {
+  @apply text-xs text-gray-500
+}
+
+.input-file-label,
+.input-text-label {
+  @apply block mb-2 text-sm font-medium text-gray-900 dark:text-white
+}
+
+.input-file-field {
+  @apply block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 file:p-2 file:bg-gray-100 file:border-0 dark:file:bg-gray-800 dark:file:text-white
+}
+
+.input-text-field {
+  @apply w-full bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500
 }

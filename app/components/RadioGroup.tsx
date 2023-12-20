@@ -2,43 +2,59 @@ import { FC } from 'react';
 import cn from 'classnames';
 
 interface Props {
-  type: string;
+  type?: string;
+  title?: string;
+  required: boolean;
   labels: {
-    id: string;
-    name: string;
+    label: string;
+    value: string;
   }[];
+  value: string;
+  errors?: string;
+  onChange: (field: string, value: any, shouldValidate?: boolean) => void;
 }
 
 const RadioGroup: FC<Props> = (props) => {
-  const { type, labels } = props;
+  const { type, title, required, labels, value, onChange, errors } = props;
 
   return (
-    <ul
-      className={cn({
-        'checkbox-group': true,
-        'checkbox-group-horizontal': type === 'horizontal',
-        'checkbox-group-vertical': type === 'vertical',
-      })}
-    >
-      {labels.map((i) => {
-        return (
-          <li className="checkbox-group-item" key={i.id}>
-            <div className="checkbox-group-item-inner">
-              <input
-                id="radioGroup"
-                type="radio"
-                value=""
-                name="radioGroup"
-                className="checkbox-group-input"
-              />
-              <label htmlFor="radioGroup" className="checkbox-group-label">
-                {i.name}
-              </label>
-            </div>
-          </li>
-        );
-      })}
-    </ul>
+    <>
+      {title && (
+        <div className="radio-group-title">
+          {title}
+          {required && <span className="required">*</span>}
+        </div>
+      )}
+      <ul
+        className={cn({
+          'radio-group': true,
+          'radio-group-horizontal': type === 'horizontal',
+          'radio-group-vertical': type === 'vertical',
+        })}
+      >
+        {labels.map((i) => {
+          return (
+            <li className="radio-group-item" key={i.label}>
+              <div className="radio-group-item-inner">
+                <input
+                  id="radioGroup"
+                  type="radio"
+                  value={i.value}
+                  name="messageType"
+                  className="radio-group-input"
+                  checked={value === i.value}
+                  onChange={(e) => onChange('messageType', e.target.value)}
+                />
+                <label htmlFor="radioGroup" className="radio-group-label">
+                  {i.label}
+                </label>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+      {errors && <span className="error-notify">{errors}</span>}
+    </>
   );
 };
 
