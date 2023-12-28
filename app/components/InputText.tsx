@@ -1,19 +1,19 @@
-import { FC } from 'react';
+import { FC, ChangeEvent } from 'react';
 
 interface Props {
   label: string;
   name: string;
   value?: string;
   className?: string;
-  handleChange?: () => void;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   req?: boolean;
   mLength?: number;
-  onError?: string;
+  errors?: string;
   required: boolean;
 }
 
 const InputText: FC<Props> = (props) => {
-  const { label, name, value, className, handleChange, required, mLength, onError } = props;
+  const { label, name, value, className, onChange, required, mLength, errors } = props;
 
   return (
     <>
@@ -29,9 +29,9 @@ const InputText: FC<Props> = (props) => {
         value={value}
         required={required}
         maxLength={mLength}
-        onChange={handleChange}
+        onChange={onChange}
       />
-      {onError && <p className="text-sm text-red-600">{onError}</p>}
+      {errors && <span className="error-notify">{errors}</span>}
     </>
   );
 };

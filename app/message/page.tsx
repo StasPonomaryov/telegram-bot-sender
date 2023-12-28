@@ -10,6 +10,8 @@ import TextArea from '../components/TextArea';
 import TextPreview from '../components/TextPreview';
 import { useGlobalState } from '../state/global';
 
+const MAX_SIZE = 4096;
+
 export const jsonExampleObjects: string = `
 {"1234567":{...},"89012345":{...},...}`;
 export const jsonExampleArray: string = `
@@ -24,13 +26,37 @@ const MessagePage: FC = () => {
     messageText: yup
       .string()
       .required('Повідомлення не може бути  порожнім')
-      .test('len', 'Не може бути більшим за 4096 символів', (val) => val.length < 4096),
+      .test('len', `Не може бути більшим за ${MAX_SIZE} символів`, (val) => val.length < MAX_SIZE),
+    attachment: yup
+      .mixed<File>()
+      .required('Не завантажено список отримувачів')
+      .test(
+        'fileSize',
+        `Розмір файлу не повинен перебільшувати ${MAX_SIZE} Мб`,
+        (val: File) => val?.size <= MAX_SIZE * 1024
+      )
+      .test(
+        'fileFormat',
+        'Дозволено тільки JSON формат',
+        (val: File) => val?.name.split('.').pop() === 'json'
+      ),
+    botToken: yup
+      .string()
+      .required('Токен не може бути порожнім')
+      .test('length', 'Токен не може бути меншим за 44 символи', (val) => val.length < 44),
   });
+
+  function handleSettingMessageType(field: string, value: any, shouldValidate?: boolean) {
+    setMessageType(value);
+    setFieldValue(field, value, shouldValidate);
+  }
 
   const formik = useFormik({
     initialValues: {
       messageType,
       messageText: sampleText,
+      attachment: '',
+      botToken: '',
     },
     enableReinitialize: true,
     validationSchema: schema,
@@ -64,7 +90,7 @@ const MessagePage: FC = () => {
             required={true}
             errors={errors.messageType}
             value={values.messageType}
-            onChange={setFieldValue}
+            onChange={handleSettingMessageType}
             labels={[
               {
                 label: 'Звичайний текст',
@@ -107,10 +133,13 @@ const MessagePage: FC = () => {
         <div className="targets-block">
           <div className="targets-input">
             <InputFile
+              accept=".json"
               fieldClassName="lg:w-2/4"
-              name="messageTargets"
+              name="attachment"
               label="Завантажте файл JSON (до 4 Мб)"
               required={true}
+              errors={errors.attachment}
+              onChange={handleChange}
             />
             <div className="targets-block-tooltip">
               Ви можете завантажити лише один JSON-файл. Він має містити ID клієнтів Telegram.
@@ -120,7 +149,13 @@ const MessagePage: FC = () => {
         </div>
         <div className="bot-info-block">
           <div className="bot-info-input">
-            <InputText name="messageBotToken" label="Введіть токен вашого бота" required={true} />
+            <InputText
+              name="botToken"
+              label="Введіть токен вашого бота"
+              required={true}
+              errors={errors.botToken}
+              onChange={handleChange}
+            />
           </div>
           <div className="bot-info-info"></div>
         </div>
