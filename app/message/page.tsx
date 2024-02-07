@@ -1,6 +1,6 @@
 'use client';
 
-import type { FC } from 'react';
+import { type FC, useState } from 'react';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import InputFile from '../components/InputFile';
@@ -9,8 +9,9 @@ import RadioGroup from '../components/RadioGroup';
 import TextArea from '../components/TextArea';
 import TextPreview from '../components/TextPreview';
 import { useGlobalState } from '../state/global';
+import { TMessageFormData, TSentStats } from '@/types/global';
 
-const MAX_SIZE = 4096;
+const MAX_SIZE = 4 * 1024 * 1024;
 
 export const jsonExampleObjects: string = `
 {"1234567":{...},"89012345":{...},...}`;
@@ -19,61 +20,82 @@ export const jsonExampleArray: string = `
 
 const sampleText = 'Приклад тексту';
 
+const schema = yup.object().shape({
+  messageType: yup.string().required('Не обрано розмітку'),
+  messageText: yup
+    .string()
+    .required('Повідомлення не може бути  порожнім')
+    .test('len', `Не може бути більшим за ${MAX_SIZE} символів`, (val) => val.length < MAX_SIZE),
+  attachment: yup
+    .mixed<File>()
+    .required('Не завантажено список отримувачів')
+    .test(
+      'fileSize',
+      `Розмір файлу не повинен перебільшувати ${MAX_SIZE} Мб`,
+      (val: File) => val && val.size <= MAX_SIZE
+    )
+    .test(
+      'fileFormat',
+      'Дозволено тільки JSON формат',
+      (val: File) => val && val.type === 'application/json'
+    ),
+  botToken: yup
+    .string()
+    .required('Токен не може бути порожнім')
+    .test('length', 'Токен не може бути меншим за 44 символи', (val) => val.length > 44),
+  subscribers: yup.string(),
+});
+
 const MessagePage: FC = () => {
   const { setMessageType, messageType } = useGlobalState();
-  const schema = yup.object().shape({
-    messageType: yup.string().required('Не обрано розмітку'),
-    messageText: yup
-      .string()
-      .required('Повідомлення не може бути  порожнім')
-      .test('len', `Не може бути більшим за ${MAX_SIZE} символів`, (val) => val.length < MAX_SIZE),
-    attachment: yup
-      .mixed<File>()
-      .required('Не завантажено список отримувачів')
-      .test(
-        'fileSize',
-        `Розмір файлу не повинен перебільшувати ${MAX_SIZE} Мб`,
-        (val: File) => val?.size <= MAX_SIZE * 1024
-      )
-      .test(
-        'fileFormat',
-        'Дозволено тільки JSON формат',
-        (val: File) => val?.name.split('.').pop() === 'json'
-      ),
-    botToken: yup
-      .string()
-      .required('Токен не може бути порожнім')
-      .test('length', 'Токен не може бути меншим за 44 символи', (val) => val.length < 44),
-  });
+  const [successAction, setSuccessAction] = useState<string>('');
+  const [errorAction, setErrorAction] = useState<Error | null>(null);
+  const [sentStats, setSentStats] = useState<TSentStats | null>(null);
 
   function handleSettingMessageType(field: string, value: any, shouldValidate?: boolean) {
     setMessageType(value);
     setFieldValue(field, value, shouldValidate);
   }
 
-  const formik = useFormik({
+  function handleFileUpload(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const file: File = (target.files as FileList)[0];
+    formik.setFieldValue('attachment', file);
+    const fileReader = new FileReader();
+    fileReader.readAsText(file);
+    fileReader.onload = (e) => {
+      // console.log('>>>RESULT', e?.target?.result);
+      formik.setFieldValue('subscribers', e?.target?.result);
+    };
+  }
+
+  const formik = useFormik<TMessageFormData>({
     initialValues: {
       messageType,
       messageText: sampleText,
-      attachment: '',
+      attachment: null,
       botToken: '',
+      subscribers: '',
     },
     enableReinitialize: true,
     validationSchema: schema,
-    onSubmit: async (formData, { resetForm }) => {
-      // const endPoint = '/api/send';
-      // fetch(endPoint, {
-      //   method: 'POST',
-      //   body: JSON.stringify(formData),
-      // })
-      //   .then((res) => res.json())
-      //   .then((response) => {
-      //     resetForm();
-      //     setTimeout(() => setSuccessAction(t('Index.sent')), 3000);
-      //   })
-      //   .catch((error) => {
-      //     setErrorAction(error)
-      //   })
+    onSubmit: async (formData: TMessageFormData, { resetForm }) => {
+      console.log('>>>TOKEN', formData.botToken?.length);
+      const endPoint = '/api/sendMessage';
+      fetch(endPoint, {
+        method: 'POST',
+        body: JSON.stringify(formData),
+      })
+        .then((res) => res.json())
+        .then((response) => {
+          console.log(response);
+          resetForm();
+          setSuccessAction('Відправлено');
+          setSentStats(response.stats);
+        })
+        .catch((error) => {
+          setErrorAction(error);
+        });
     },
   });
 
@@ -139,7 +161,7 @@ const MessagePage: FC = () => {
               label="Завантажте файл JSON (до 4 Мб)"
               required={true}
               errors={errors.attachment}
-              onChange={handleChange}
+              onChange={handleFileUpload}
             />
             <div className="targets-block-tooltip">
               Ви можете завантажити лише один JSON-файл. Він має містити ID клієнтів Telegram.
@@ -159,13 +181,22 @@ const MessagePage: FC = () => {
           </div>
           <div className="bot-info-info"></div>
         </div>
-        <div className="progress-block"></div>
+        <div className="progress-block">
+          {sentStats ? (
+            <>
+              <span>Відправлено</span>
+              <span>{sentStats.ok}</span>
+            </>
+          ) : null}
+        </div>
         <div className="actions-block">
           <button type="submit" className="submit-button">
             Старт
           </button>
         </div>
       </form>
+      {successAction && successAction.length ? <span>{successAction}</span> : null}
+      {errorAction ? errorAction.message : null}
     </main>
   );
 };
