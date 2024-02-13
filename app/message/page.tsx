@@ -163,7 +163,7 @@ const MessagePage: FC = () => {
     },
   });
 
-  const { errors, values, handleChange, handleSubmit, setFieldValue } = formik;
+  const { errors, values, touched, handleChange, handleSubmit, setFieldValue } = formik;
 
   return (
     <main className="page-content">
@@ -227,6 +227,7 @@ const MessagePage: FC = () => {
               errors={errors.attachment}
               value={values.attachment}
               onChange={handleFileUpload}
+              touched={touched.attachment}
             />
             <div className="targets-block-tooltip">
               Ви можете завантажити лише один JSON-файл. Він має містити ID клієнтів Telegram.
@@ -241,6 +242,7 @@ const MessagePage: FC = () => {
               label="Введіть токен вашого бота"
               required={true}
               errors={errors.botToken}
+              touched={touched.botToken}
               onChange={handleChange}
               value={values.botToken}
             />

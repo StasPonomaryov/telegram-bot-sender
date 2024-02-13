@@ -8,11 +8,12 @@ interface Props {
   required: boolean;
   errors?: string;
   value?: FileList | null;
+  touched?: boolean;
   onChange: (e: Event) => void;
 }
 
 const InputFile: FC<Props> = (props) => {
-  const { accept, name, label, fieldClassName, required, errors, onChange } = props;
+  const { accept, name, label, fieldClassName, required, errors, onChange, touched } = props;
 
   return (
     <>
@@ -30,7 +31,7 @@ const InputFile: FC<Props> = (props) => {
           onChange={onChange as unknown as ChangeEventHandler<HTMLInputElement>}
         />
       </div>
-      {errors && <span className="error-notify">{errors}</span>}
+      {touched && errors && <span className="error-notify">{errors}</span>}
     </>
   );
 };

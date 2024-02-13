@@ -10,10 +10,11 @@ interface Props {
   mLength?: number;
   errors?: string;
   required: boolean;
+  touched?: boolean;
 }
 
 const InputText: FC<Props> = (props) => {
-  const { label, name, value, className, onChange, required, mLength, errors } = props;
+  const { label, name, value, className, onChange, required, mLength, errors, touched } = props;
 
   return (
     <>
@@ -31,7 +32,7 @@ const InputText: FC<Props> = (props) => {
         maxLength={mLength}
         onChange={onChange}
       />
-      {errors && <span className="error-notify">{errors}</span>}
+      {touched && errors && <span className="error-notify">{errors}</span>}
     </>
   );
 };
