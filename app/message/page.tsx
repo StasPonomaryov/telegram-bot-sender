@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import { type FC, useState } from 'react';
+import { type FC, useState, useEffect } from 'react';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import InputFile from '../components/InputFile';
@@ -9,14 +10,16 @@ import RadioGroup from '../components/RadioGroup';
 import TextArea from '../components/TextArea';
 import TextPreview from '../components/TextPreview';
 import { useGlobalState } from '../state/global';
-import { TMessageFormData, TSentStats } from '@/types/global';
+import { TMessageFormData, TSentStats, TTgUser } from '@/types/global';
+import { sendMessage } from '@/lib/sendToTelegram';
+import { getRandomInt, logMessage, parseJsonToArray, sleep } from '@/lib/utils';
 
 const MAX_SIZE = 4 * 1024 * 1024;
 
 export const jsonExampleObjects: string = `
 {"1234567":{...},"89012345":{...},...}`;
 export const jsonExampleArray: string = `
-{["1234567", "89012345", ...]}`;
+["1234567", "89012345", ...]`;
 
 const sampleText = 'Приклад тексту';
 
@@ -51,11 +54,29 @@ const MessagePage: FC = () => {
   const [successAction, setSuccessAction] = useState<string>('');
   const [errorAction, setErrorAction] = useState<Error | null>(null);
   const [sentStats, setSentStats] = useState<TSentStats | null>(null);
+  const [isSending, setIsSending] = useState(false);
+  const [controller, setController] = useState<AbortController | null>(null);
+  const [progress, setProgress] = useState(0);
 
   function handleSettingMessageType(field: string, value: any, shouldValidate?: boolean) {
     setMessageType(value);
     setFieldValue(field, value, shouldValidate);
   }
+
+  function stopSending() {
+    console.log('>>>CLICKED STOP');
+    if (controller) {
+      console.log('>>>STOPPING');
+      controller.abort();
+    }
+    setIsSending(false);
+  }
+
+  useEffect(() => {
+    return () => {
+      stopSending();
+    };
+  }, []);
 
   function handleFileUpload(event: Event) {
     const target = event.target as HTMLInputElement;
@@ -80,22 +101,65 @@ const MessagePage: FC = () => {
     enableReinitialize: true,
     validationSchema: schema,
     onSubmit: async (formData: TMessageFormData, { resetForm }) => {
-      console.log('>>>TOKEN', formData.botToken?.length);
-      const endPoint = '/api/sendMessage';
-      fetch(endPoint, {
-        method: 'POST',
-        body: JSON.stringify(formData),
-      })
-        .then((res) => res.json())
-        .then((response) => {
-          console.log(response);
-          resetForm();
-          setSuccessAction('Відправлено');
-          setSentStats(response.stats);
-        })
-        .catch((error) => {
-          setErrorAction(error);
+      const newController = new AbortController();
+      setController(newController);
+      setIsSending(true);
+      let chatIds: string[] = [];
+      if (process.env.NODE_ENV === 'development') {
+        for (let i = 0; i < 100; i += 1) {
+          chatIds.push(getRandomInt(100000000, 999999999).toString());
+        }
+      } else {
+        chatIds = parseJsonToArray(formData.subscribers);
+      }
+
+      async function delayedSend() {
+        const delay = 100;
+        const counters: TSentStats = {
+          ok: 0,
+          error: 0,
+          total: 0,
+        };
+        const badIds = [];
+        for (let i = 0; i < chatIds.length; i += 1) {
+          setProgress(Number(((i + 1) * 100) / chatIds.length));
+          try {
+            if (newController.signal?.aborted) {
+              break;
+            }
+            // const res = await sendMessage(formData.botToken, formData.messageText, i as TTgUser);
+            const res = await logMessage(formData.botToken, formData.messageText, i as TTgUser);
+
+            if (res === 200) {
+              counters.ok += 1;
+            } else {
+              counters.error += 1;
+              badIds.push(res);
+            }
+            counters.total += 1;
+            setSentStats(counters);
+          } catch (e) {
+            console.log(e);
+          }
+
+          await sleep(delay);
+        }
+        resetForm({
+          values: {
+            messageType,
+            messageText: sampleText,
+            attachment: null,
+            botToken: '',
+            subscribers: '',
+          },
         });
+        setProgress(0);
+        setSuccessAction('Відправлено');
+        setIsSending(false);
+        setController(null);
+      }
+
+      delayedSend();
     },
   });
 
@@ -161,6 +225,7 @@ const MessagePage: FC = () => {
               label="Завантажте файл JSON (до 4 Мб)"
               required={true}
               errors={errors.attachment}
+              value={values.attachment}
               onChange={handleFileUpload}
             />
             <div className="targets-block-tooltip">
@@ -177,26 +242,54 @@ const MessagePage: FC = () => {
               required={true}
               errors={errors.botToken}
               onChange={handleChange}
+              value={values.botToken}
             />
           </div>
           <div className="bot-info-info"></div>
         </div>
         <div className="progress-block">
+          {progress ? (
+            <div className="w-1/2 bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-2 mb-4">
+              <div
+                className="bg-blue-600 h-2.5 rounded-full"
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
+          ) : null}
           {sentStats ? (
-            <>
-              <span>Відправлено</span>
-              <span>{sentStats.ok}</span>
-            </>
+            <table className="results-table">
+              <tbody>
+                <tr>
+                  <th scope="row">Відправлено</th>
+                  <td>{sentStats.ok}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Помилки</th>
+                  <td>{sentStats.error}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Всього</th>
+                  <td>{sentStats.total}</td>
+                </tr>
+              </tbody>
+            </table>
           ) : null}
         </div>
         <div className="actions-block">
           <button type="submit" className="submit-button">
             Старт
           </button>
+          {isSending ? (
+            <button onClick={stopSending} className="cancel-button">
+              Зупинити
+            </button>
+          ) : null}
         </div>
       </form>
-      {successAction && successAction.length ? <span>{successAction}</span> : null}
-      {errorAction ? errorAction.message : null}
+      {successAction && successAction.length ? (
+        <span className="success-notify my-4">{successAction}</span>
+      ) : null}
+      {errorAction ? <span className="error-notify my-4">{errorAction.message}</span> : null}
     </main>
   );
 };

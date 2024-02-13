@@ -70,6 +70,9 @@ devDependencies:
   babel-jest:
     specifier: ^29.6.1
     version: 29.6.1(@babel/core@7.22.9)
+  chalk:
+    specifier: ^5.3.0
+    version: 5.3.0
   classnames:
     specifier: ^2.3.2
     version: 2.3.2
@@ -1511,6 +1514,11 @@ packages:
     dependencies:
       ansi-styles: 4.3.0
       supports-color: 7.2.0
+
+  /chalk@5.3.0:
+    resolution: {integrity: sha512-dLitG79d+GV1Nb/VYcCDFivJeK1hiukt9QjRNVOsUtTy1rR1YJsmpGGTZ3qJos+uw7WmWF4wUwBd9jxjocFC2w==}
+    engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
+    dev: true
 
   /char-regex@1.0.2:
     resolution: {integrity: sha512-kWWXztvZ5SBQV+eRgKFeh8q5sLuZY2+8WUIzlxWVTg+oGwY14qylx1KbKzHd8P6ZYkAg0xyIDU9JMHhyJMZ1jw==}

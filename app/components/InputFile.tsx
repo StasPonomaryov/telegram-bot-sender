@@ -7,6 +7,7 @@ interface Props {
   fieldClassName?: string;
   required: boolean;
   errors?: string;
+  value?: FileList | null;
   onChange: (e: Event) => void;
 }
 

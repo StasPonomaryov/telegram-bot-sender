@@ -55,6 +55,10 @@ ul.vertical {
   @apply px-8 py-3 text-white bg-blue-300 rounded focus:outline-none
 }
 
+.cancel-button {
+  @apply px-8 py-3 mx-3 text-white bg-red-600 rounded focus:outline-none
+}
+
 .screen-centered {
   @apply flex flex-col items-center justify-center
 }
@@ -172,4 +176,24 @@ div[class*="block-tooltip"] {
 
 .error-notify {
   @apply text-red-600 text-sm
+}
+
+.success-notify {
+  @apply text-green-600 text-sm
+}
+
+.results-table {
+  @apply text-sm text-left text-gray-500 dark:text-gray-400 mb-6 ml-4
+}
+
+.results-table tr {
+  @apply bg-white border-b dark:bg-gray-800 dark:border-gray-700
+}
+
+.results-table tr th {
+  @apply px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white
+}
+
+.results-table td {
+  @apply px-6 py-4
 }
