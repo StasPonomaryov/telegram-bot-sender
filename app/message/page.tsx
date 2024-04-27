@@ -13,6 +13,7 @@ import { useGlobalState } from '../state/global';
 import { TMessageFormData, TSentStats, TTgUser } from '@/types/global';
 import { sendMessage } from '@/lib/sendToTelegram';
 import { getRandomInt, logMessage, parseJsonToArray, sleep } from '@/lib/utils';
+import MarkdownPreview from '../components/MarkdownPreview';
 
 const MAX_SIZE = 4 * 1024 * 1024;
 
@@ -144,15 +145,7 @@ const MessagePage: FC = () => {
 
           await sleep(delay);
         }
-        resetForm({
-          values: {
-            messageType,
-            messageText: sampleText,
-            attachment: null,
-            botToken: '',
-            subscribers: '',
-          },
-        });
+        resetForm();
         setProgress(0);
         setSuccessAction('Відправлено');
         setIsSending(false);
@@ -213,7 +206,10 @@ const MessagePage: FC = () => {
             </div>
           </div>
           <div className="message-preview">
-            <TextPreview textToShow={values.messageText} />
+            {values.messageType === 'plain' && <TextPreview textToShow={values.messageText} />}
+            {values.messageType === 'markdown' && (
+              <MarkdownPreview messageText={values.messageText} />
+            )}
           </div>
         </div>
         <div className="targets-block">
