@@ -158,6 +158,7 @@ ul.vertical {
 }
 
 div[class*="block-tooltip"] {
+  white-space: pre-line;
   @apply text-xs text-gray-500
 }
 
@@ -196,4 +197,8 @@ div[class*="block-tooltip"] {
 
 .results-table td {
   @apply px-6 py-4
+}
+
+.line-break {
+  white-space: pre-wrap;
 }

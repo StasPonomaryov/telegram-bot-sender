@@ -1,19 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import { type FC, useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
+import { type FC, useState, useEffect, useMemo } from 'react';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
-import InputFile from '../components/InputFile';
-import InputText from '../components/InputText';
-import RadioGroup from '../components/RadioGroup';
-import TextArea from '../components/TextArea';
-import TextPreview from '../components/TextPreview';
+import InputFile from '../components/UI/InputFile';
+import InputText from '../components/UI/InputText';
+import RadioGroup from '../components/UI/RadioGroup';
+import TextArea from '../components/UI/TextArea';
+import TextPreview from '../components/UI/TextPreview';
 import { useGlobalState } from '../state/global';
 import { TMessageFormData, TSentStats, TTgUser } from '@/types/global';
 import { sendMessage } from '@/lib/sendToTelegram';
 import { getRandomInt, logMessage, parseJsonToArray, sleep } from '@/lib/utils';
-import MarkdownPreview from '../components/MarkdownPreview';
+import MarkdownPreview from '../components/UI/MarkdownPreview';
+const HelperTextNoSSR = dynamic(() => import('../components/UI/HelperText'), { ssr: false });
+import * as tooltips from './tooltips.json';
 
 const MAX_SIZE = 4 * 1024 * 1024;
 
@@ -158,6 +161,10 @@ const MessagePage: FC = () => {
 
   const { errors, values, touched, handleChange, handleSubmit, setFieldValue } = formik;
 
+  const helperText = useMemo(() => {
+    return (tooltips as { [key: string]: string })[values.messageType];
+  }, [values]);
+
   return (
     <main className="page-content">
       <h2 className="page-title">Відправити текстове повідомлення</h2>
@@ -197,12 +204,7 @@ const MessagePage: FC = () => {
               onChange={handleChange}
             />
             <div className="message-block-tooltip">
-              Якщо ви хочете додати до повідомлення emoji (курсор повинен бути встановлений у поле
-              для вводу повідомлення):
-              <br />
-              Windows - Натисніть клавішу з логотипом Windows + . (крапка)
-              <br />
-              Mac OS - Натисніть Command + Control + пробіл
+              <HelperTextNoSSR text={helperText} />
             </div>
           </div>
           <div className="message-preview">
