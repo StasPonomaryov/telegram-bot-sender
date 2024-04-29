@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import cn from 'classnames';
 
-interface Props {
+interface IRadioGroupProps {
   type?: string;
   title?: string;
   required: boolean;
@@ -14,7 +14,7 @@ interface Props {
   onChange: (field: string, value: any, shouldValidate?: boolean) => void;
 }
 
-const RadioGroup: FC<Props> = (props) => {
+const RadioGroup: FC<IRadioGroupProps> = (props) => {
   const { type, title, required, labels, value, onChange, errors } = props;
 
   return (

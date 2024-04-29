@@ -1,6 +1,6 @@
 import { ChangeEventHandler, FC } from 'react';
 
-interface Props {
+interface IInputFileProps {
   accept: string;
   name: string;
   label: string;
@@ -12,7 +12,7 @@ interface Props {
   onChange: (e: Event) => void;
 }
 
-const InputFile: FC<Props> = (props) => {
+const InputFile: FC<IInputFileProps> = (props) => {
   const { accept, name, label, fieldClassName, required, errors, onChange, touched } = props;
 
   return (

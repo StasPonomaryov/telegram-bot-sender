@@ -1,11 +1,11 @@
 import { FC } from 'react';
 
-interface Props {
+interface ITextPreviewProps {
   botName?: string;
   textToShow?: string;
 }
 
-const TextPreview: FC<Props> = (props) => {
+const TextPreview: FC<ITextPreviewProps> = (props) => {
   const { botName, textToShow } = props;
 
   return (

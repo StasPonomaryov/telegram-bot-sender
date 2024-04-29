@@ -1,6 +1,6 @@
 import { FC, ChangeEvent } from 'react';
 
-interface Props {
+interface IInputTextProps {
   label: string;
   name: string;
   value?: string;
@@ -13,7 +13,7 @@ interface Props {
   touched?: boolean;
 }
 
-const InputText: FC<Props> = (props) => {
+const InputText: FC<IInputTextProps> = (props) => {
   const { label, name, value, className, onChange, required, mLength, errors, touched } = props;
 
   return (

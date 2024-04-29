@@ -1,6 +1,6 @@
 import { FC, ChangeEvent } from 'react';
 
-interface Props {
+interface ITextareaProps {
   label: string;
   name: string;
   placeholder?: string;
@@ -10,7 +10,7 @@ interface Props {
   onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
-const TextArea: FC<Props> = (props) => {
+const TextArea: FC<ITextareaProps> = (props) => {
   const { label, name, value, placeholder, required, onChange, errors } = props;
 
   return (
