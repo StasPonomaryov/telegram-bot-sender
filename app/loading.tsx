@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import LoadingSpinner from './components/LoadingSpinner';
+import LoadingSpinner from './components/UI/LoadingSpinner';
 
 const Loading: NextPage = () => {
   return (
